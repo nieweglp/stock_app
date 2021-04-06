@@ -5,4 +5,4 @@ What is more app can also display sentiment analysis based on tweets about compa
 
 App was deployed on Heroku cloud platform.
 
-(Stock app)[https://app-current-stocks.herokuapp.com/]
+[Stock app](https://app-current-stocks.herokuapp.com)
