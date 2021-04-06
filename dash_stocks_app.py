@@ -63,7 +63,7 @@ app.layout = html.Div(children=[
     dcc.Graph(id='sentiment_chart')
     ], style={'width': '49%', 'display': 'inline-block'}),
 
-    html.Div(id='current_tweets', style={'whiteSpace': 'pre-line', 'display': 'inline-block', 'width': '49%'}),
+    html.Div(id='current_tweets', style={'whiteSpace': 'pre-line', 'display': 'inline-block', 'width': '49%'})
 ] )
 
 @app.callback(
@@ -91,9 +91,9 @@ def update_stock_plot(selected_company):
 def update_tweets(selected_company):
     if selected_company != None:
         tweets = tweepy.Cursor(api.search, q=names_dict[selected_company], 
-                            lang="en").items(10)
+                            lang="en").items(100)
         tweets_content = [text_analysis.clean_text(tweet.text) + '\n' for tweet in tweets]
-        return tweets_content
+        return tweets_content[:20]
 
 @app.callback(
     Output('sentiment_chart', 'figure'),
@@ -101,7 +101,7 @@ def update_tweets(selected_company):
 def update_sentiment_chart(selected_company):
     if selected_company != None:
         tweets = tweepy.Cursor(api.search, q=names_dict[selected_company], 
-                            lang="en").items(10)
+                            lang="en").items(100)
         df = pd.DataFrame([tweet.text for tweet in tweets], columns=['Tweets'])
         df['Tweets'] = df['Tweets'].apply(text_analysis.clean_text)
         df['Subjectivity'] =  df['Tweets'].apply(text_analysis.get_subjectivity)
@@ -109,13 +109,12 @@ def update_sentiment_chart(selected_company):
         df['Sentiment'] = df['Polarity'].apply(text_analysis.get_sentiment)
         df_sentiment_output = df['Sentiment'].value_counts().sort_index(ascending=False)
         fig = go.Figure()
+        sentiment_color = {'Positive': 'green', 'Neutral': 'yellow', 'Negative': 'red'}
         fig.add_trace(go.Bar(x=df_sentiment_output.index,
                             y=df_sentiment_output.values,
                             orientation='v',
                             marker=dict(
-                                        color=['green', 
-                                              'yellow',
-                                              'red'],
+                                        color=[color for sentiment, color in sentiment_color.items() if sentiment in df_sentiment_output.index.to_list()],
                                         opacity=0.5)))
         return fig
     else:

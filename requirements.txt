@@ -27,3 +27,7 @@ six==1.15.0
 urllib3==1.26.2
 Werkzeug==1.0.1
 yfinance==0.1.54
+textblob==0.15.3
+tweepy==3.10.0
+PyYAML==5.3.1
+regex==2020.10.15
